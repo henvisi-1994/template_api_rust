@@ -1,0 +1,15 @@
+# Rust / Cargo
+/target
+**/*.rs.bk
+
+# Environment variables
+.env
+.env.*
+
+# Logs
+*.log
+
+# Editor / IDE
+.vscode/
+.idea/
+.DS_Store
