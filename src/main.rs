@@ -1,15 +1,16 @@
-use axum::Router;
-use tokio::net::TcpListener;
-use sqlx::postgres::PgPoolOptions;
 use crate::app_state::AppState;
-
+use axum::Router;
+use sqlx::postgres::{PgConnectOptions, PgPoolOptions};
+use tokio::net::TcpListener;
+use tokio::time::Duration;
 mod app_state;
-mod routes;
 mod controllers;
-mod requests;
-mod services;
 mod models;
 mod repositories;
+mod requests;
+mod resources;
+mod routes;
+mod services;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
@@ -23,29 +24,34 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     // =========================
     // Database (Supabase)
     // =========================
-    let database_url =
-        std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+    tracing::info!("acquiring connection...");
 
-    let db = PgPoolOptions::new()
-        .max_connections(5)
-        .connect(&database_url)
+    let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+    let connect_options = database_url
+        .parse::<PgConnectOptions>()?
+        .statement_cache_capacity(0);
+
+    let pool = PgPoolOptions::new()
+        .max_connections(15)
+        .min_connections(5)
+        .idle_timeout(Duration::from_secs(300))
+        .acquire_timeout(Duration::from_secs(10))
+        .connect_with(connect_options)
         .await?;
+tracing::info!("connection acquired");
 
     // =========================
     // AppState
     // =========================
-    let app_state = AppState { db };
+    let app_state = AppState { db: pool };
 
     // =========================
     // Router
     // =========================
-    let app = Router::new()
-        .merge(routes::api::routes(app_state));
+    let app = Router::new().merge(routes::api::routes(app_state));
 
-    let listener = TcpListener::bind("127.0.0.1:3000").await?;
-    tracing::info!("Server listening on http://127.0.0.1:3000");
-
+    let listener = TcpListener::bind("0.0.0.0:3000").await?;
+    tracing::info!("Server listening on http://0.0.0.0:3000");
     axum::serve(listener, app).await?;
-
     Ok(())
 }
