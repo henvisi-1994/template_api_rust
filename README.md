@@ -80,6 +80,7 @@ DATABASE_URL=postgresql://usuario:contraseña@host:5432/base_de_datos?sslmode=re
 # Opcionales
 RUST_LOG=debug
 PORT=3000
+JWT_SECRET=super-secret
 ```
 
 ## 📂 Estructura del proyecto

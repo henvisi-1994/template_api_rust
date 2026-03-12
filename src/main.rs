@@ -22,7 +22,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         .init();
 
     // =========================
-    // Database (Supabase)
+    // Database (PostgreSQL)
     // =========================
     tracing::info!("acquiring connection...");
 

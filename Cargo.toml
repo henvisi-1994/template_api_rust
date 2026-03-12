@@ -4,28 +4,50 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+# ================== WEB ==================
 axum = { version = "0.7", features = ["macros"] }
 tokio = { version = "1.37", features = ["full"] }
+tower = "0.5.3"
 
+tower-http = { version = "0.5", features = [
+  "cors",
+  "fs",          # <-- NECESARIO para ServeDir (/uploads)
+  "trace"
+] }
+
+# ================== SERIALIZACIÓN ==================
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 
+# ================== AUTH / SECURITY ==================
+jsonwebtoken = "9"
+bcrypt = "0.15"
+base64 = "0.22"
+uuid = { version = "1.3.0", features = ["serde", "v4"] }
+
+# ================== ERRORES / ASYNC ==================
 anyhow = "1.0"
 async-trait = "0.1"
+reqwest = { version = "0.12", default-features = false, features = ["json", "multipart", "rustls-tls"] }
 
+# ================== LOGGING ==================
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 
+# ================== FECHAS ==================
 chrono = { version = "0.4.23", features = ["serde"] }
-uuid = { version = "1.3.0", features = ["serde", "v4"] }
 
+# ================== ENV ==================
 dotenvy = "0.15"
 
+# ================== DATABASE ==================
 [dependencies.sqlx]
 version = "0.6.2"
 features = [
   "runtime-tokio-native-tls",
   "postgres",
+  "macros",
   "chrono",
-  "uuid"
+  "uuid",
+  "json"
 ]

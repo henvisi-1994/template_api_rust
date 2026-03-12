@@ -1,7 +1,7 @@
 use crate::repositories::deletable::Deletable;
 use crate::repositories::insertable::Insertable;
-use crate::repositories::listable::Listable;
 use crate::repositories::listable::FilterOp;
+use crate::repositories::listable::Listable;
 use crate::repositories::updatable::Updatable;
 use sqlx::FromRow;
 use sqlx::{postgres::PgRow, Error, Pool, Postgres};
@@ -17,7 +17,10 @@ where
 {
     let columns = F::COLUMNS.join(", ");
     let mut query = format!("SELECT {} FROM {}", columns, F::TABLE);
-
+    for join in filter.joins() {
+        query.push(' ');
+        query.push_str(join);
+    }
     let filters = filter.filters();
     let mut bind_index = 1;
     let mut binds = Vec::new();
@@ -58,10 +61,7 @@ where
     if let (Some(page), Some(per_page)) = (filter.page(), filter.per_page()) {
         let offset = (page.saturating_sub(1) * per_page) as i64;
 
-        query.push_str(&format!(
-            " LIMIT {} OFFSET {}",
-            per_page, offset
-        ));
+        query.push_str(&format!(" LIMIT {} OFFSET {}", per_page, offset));
     }
 
     let mut q = sqlx::query_as::<_, T>(&query).persistent(false);

@@ -1,5 +1,4 @@
-pub mod insertable;
-pub mod updatable;
 pub mod deletable;
+pub mod insertable;
 pub mod listable;
-
+pub mod updatable;

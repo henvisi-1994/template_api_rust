@@ -7,6 +7,10 @@ pub trait Listable {
     const TABLE: &'static str;
     const COLUMNS: &'static [&'static str];
 
+    /// JOINs SQL
+    fn joins(&self) -> Vec<&'static str> {
+        vec![]
+    }
     /// columna, operación
     fn filters(&self) -> Vec<(&'static str, FilterOp)>;
 

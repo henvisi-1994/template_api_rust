@@ -1,4 +1,4 @@
-use sqlx::{Postgres, postgres::PgArguments};
+use sqlx::{postgres::PgArguments, Postgres};
 
 pub trait Updatable {
     /// Tabla
