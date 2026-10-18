@@ -137,7 +137,9 @@ cargo test
 
 ## 🤝 Contribuir
 
-Las contribuciones son bienvenidas:
+Las contribuciones son bienvenidas. Consulta la [guía de contribución](CONTRIBUTING.md) para el flujo de trabajo, la convención de commits y qué incluir en tu Pull Request.
+
+Resumen:
 
 1. Haz fork del repositorio
 
