@@ -18,10 +18,10 @@ Ideal para prototipos rápidos, microservicios o proyectos *production-ready*.
 
 ## 🛠️ Tecnologías utilizadas
 
-- **Rust** 1.83
+- **Rust** 1.88
 - **Axum** 0.7 (con macros)
-- **Tokio** 1.37 (full)
-- **SQLx** 0.6  
+- **Tokio** 1.49 (full)
+- **SQLx** 0.8  
   - runtime-tokio-native-tls  
   - postgres  
   - chrono  
@@ -37,7 +37,7 @@ Ideal para prototipos rápidos, microservicios o proyectos *production-ready*.
 
 ```bash
 # Clona el repositorio
-git clone https://github.com/tu-usuario/template_api_rust.git
+git clone https://github.com/henvisi-1994/template_api_rust.git
 cd template_api_rust
 
 # Copia el ejemplo de variables de entorno
