@@ -10,6 +10,7 @@ Este proyecto es una base sólida para desarrollar una API backend en Rust. Incl
 - Servidor web con **Axum** (rápido, modular y basado en Hyper)
 - Runtime asíncrono con **Tokio** (full features)
 - Conexión a base de datos PostgreSQL mediante **SQLx** (type-safe, async, con migraciones)
+- **Autenticación con JWT**: registro, login y middleware de rutas protegidas (bcrypt + jsonwebtoken)
 - Logging y tracing con **tracing** + **tracing-subscriber**
 - Carga de variables de entorno con **dotenvy**
 - Soporte completo para Docker y Docker Compose (imagen optimizada multi-stage)
@@ -31,6 +32,7 @@ Ideal para prototipos rápidos, microservicios o proyectos *production-ready*.
 - **Serde** + **Serde JSON**
 - **Tracing** + **Tracing Subscriber**
 - **UUID**, **Chrono**, **Anyhow**, **Async-Trait**
+- **JSON Web Token** + **Bcrypt** (autenticación)
 - **Dotenvy**
 
 ## 🚀 Inicio rápido
@@ -79,17 +81,47 @@ Crea un archivo `.env` en la raíz del proyecto con al menos:
 ```bash
 DATABASE_URL=postgresql://usuario:contraseña@host:5432/base_de_datos?sslmode=require
 
+# Obligatoria para autenticación (usa un valor largo y aleatorio en producción)
+JWT_SECRET=cambia-este-secreto
+
 # Opcionales
 RUST_LOG=debug
 PORT=3000
-JWT_SECRET=super-secret
 ```
+
+## 🔐 Autenticación (JWT)
+
+La plantilla incluye autenticación con JWT de ejemplo. Las migraciones crean la tabla `users` al arrancar.
+
+| Método | Ruta | Acceso | Descripción |
+|--------|------|--------|-------------|
+| POST | `/auth/register` | Público | Crea un usuario y devuelve un token |
+| POST | `/auth/login` | Público | Valida credenciales y devuelve un token |
+| GET | `/auth/me` | Protegido | Devuelve el usuario del token |
+
+```bash
+# Registrar
+curl -X POST http://localhost:3000/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"email":"yo@ejemplo.com","password":"secreto123","name":"Ana"}'
+
+# Login
+curl -X POST http://localhost:3000/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"yo@ejemplo.com","password":"secreto123"}'
+
+# Ruta protegida (usa el token del login)
+curl http://localhost:3000/auth/me -H "Authorization: Bearer <token>"
+```
+
+Para proteger tus propias rutas, añádelas al `Router` con `.route_layer(middleware::from_fn_with_state(state, auth_middleware))` (ver `src/routes/api.rs`) y extrae el usuario con el extractor `AuthUser`.
 
 ## 📂 Estructura del proyecto
 
 ```
 .
 ├── src/                # Código fuente principal
+├── migrations/         # Migraciones de SQLx (se ejecutan al arrancar)
 ├── Cargo.toml          # Dependencias y configuración de Rust
 ├── Dockerfile          # Imagen Docker optimizada (multi-stage)
 ├── docker-compose.yml  # Docker Compose (opcional DB local)

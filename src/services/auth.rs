@@ -1,7 +1,29 @@
 use anyhow::{anyhow, Context, Result};
-use jsonwebtoken::{decode, Algorithm, DecodingKey, Validation};
+use jsonwebtoken::{decode, encode, Algorithm, DecodingKey, EncodingKey, Header, Validation};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
+
+/// Token lifetime: 24 hours.
+const TOKEN_TTL_SECONDS: i64 = 60 * 60 * 24;
+
+/// Build a signed JWT for a user.
+pub fn create_token(user_id: Uuid, email: &str) -> Result<String> {
+    let secret = jwt_secret()?;
+
+    let exp = chrono::Utc::now().timestamp() + TOKEN_TTL_SECONDS;
+    let claims = Claims {
+        user_id,
+        email: Some(email.to_string()),
+        exp: exp as usize,
+    };
+
+    encode(
+        &Header::default(),
+        &claims,
+        &EncodingKey::from_secret(secret.as_bytes()),
+    )
+    .context("failed to encode JWT")
+}
 
 /// Claims that the app uses internally after validating a JWT.
 #[derive(Debug, Serialize, Deserialize)]

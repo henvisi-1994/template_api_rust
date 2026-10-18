@@ -26,6 +26,7 @@ RUN rm -f src/main.rs
 
 # Copia el código real
 COPY src/ ./src/
+COPY migrations/ ./migrations/
 
 # Fuerza recompilación del binario real
 RUN rm -rf target/release

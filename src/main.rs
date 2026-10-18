@@ -5,6 +5,7 @@ use tokio::net::TcpListener;
 use tokio::time::Duration;
 mod app_state;
 mod controllers;
+mod middleware;
 mod models;
 mod repositories;
 mod requests;
@@ -39,6 +40,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         .connect_with(connect_options)
         .await?;
 tracing::info!("connection acquired");
+
+    // =========================
+    // Migraciones (SQLx)
+    // =========================
+    sqlx::migrate!("./migrations").run(&pool).await?;
+    tracing::info!("migrations applied");
 
     // =========================
     // AppState
