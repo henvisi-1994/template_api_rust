@@ -24,8 +24,10 @@ Ideal para prototipos rápidos, microservicios o proyectos *production-ready*.
 - **SQLx** 0.8  
   - runtime-tokio-native-tls  
   - postgres  
+  - macros  
   - chrono  
-  - uuid
+  - uuid  
+  - json
 - **Serde** + **Serde JSON**
 - **Tracing** + **Tracing Subscriber**
 - **UUID**, **Chrono**, **Anyhow**, **Async-Trait**
